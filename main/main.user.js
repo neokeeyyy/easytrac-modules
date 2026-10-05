@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         EASYTRAC Main
 // @namespace    easytrac.main
-// @version      1.0.1
+// @version      1.0.2
 // @description  Orquestador modular EASYTRAC — automatización SIRETRAC (Gas LP)
 // @author       ojuel
 // @match        https://siretrac.cne.gob.mx/*
@@ -12,14 +12,14 @@
 // @grant        GM_download
 // @grant        GM_xmlhttpRequest
 // @require      https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js
-// @require      https://cdn.jsdelivr.net/gh/neokeeyyy/easytrac-modules@v1.0.1/modules/shared.js
-// @require      https://cdn.jsdelivr.net/gh/neokeeyyy/easytrac-modules@v1.0.1/modules/module-acs.js
-// @require      https://cdn.jsdelivr.net/gh/neokeeyyy/easytrac-modules@v1.0.1/modules/module-acs-rep.js
-// @require      https://cdn.jsdelivr.net/gh/neokeeyyy/easytrac-modules@v1.0.1/modules/module-stoolkit.js
-// @require      https://cdn.jsdelivr.net/gh/neokeeyyy/easytrac-modules@v1.0.1/modules/module-sales.js
-// @require      https://cdn.jsdelivr.net/gh/neokeeyyy/easytrac-modules@v1.0.1/modules/module-acuses.js
-// @updateURL    https://cdn.jsdelivr.net/gh/neokeeyyy/easytrac-modules@main/main/main.user.js.meta.js
-// @downloadURL  https://cdn.jsdelivr.net/gh/neokeeyyy/easytrac-modules@main/main/main.user.js
+// @require      https://cdn.jsdelivr.net/gh/neokeeyyy/easytrac-modules@v1.0.2/modules/shared.js
+// @require      https://cdn.jsdelivr.net/gh/neokeeyyy/easytrac-modules@v1.0.2/modules/module-acs.js
+// @require      https://cdn.jsdelivr.net/gh/neokeeyyy/easytrac-modules@v1.0.2/modules/module-acs-rep.js
+// @require      https://cdn.jsdelivr.net/gh/neokeeyyy/easytrac-modules@v1.0.2/modules/module-stoolkit.js
+// @require      https://cdn.jsdelivr.net/gh/neokeeyyy/easytrac-modules@v1.0.2/modules/module-sales.js
+// @require      https://cdn.jsdelivr.net/gh/neokeeyyy/easytrac-modules@v1.0.2/modules/module-acuses.js
+// @updateURL    https://raw.githubusercontent.com/neokeeyyy/easytrac-modules/main/main/main.user.js
+// @downloadURL  https://raw.githubusercontent.com/neokeeyyy/easytrac-modules/main/main/main.user.js
 // @run-at       document-idle
 // @updateMode   notify
 // ==/UserScript==
