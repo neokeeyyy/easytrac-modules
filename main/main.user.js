@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         EASYTRAC Main
 // @namespace    easytrac.main
-// @version      1.0.4
+// @version      2.0.0
 // @description  Orquestador modular EASYTRAC — automatización SIRETRAC (Gas LP)
 // @author       ojuel
 // @match        https://siretrac.cne.gob.mx/*
@@ -11,13 +11,17 @@
 // @grant        GM_addStyle
 // @grant        GM_download
 // @grant        GM_xmlhttpRequest
+// @grant        unsafeWindow
 // @require      https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js
-// @require      https://cdn.jsdelivr.net/gh/neokeeyyy/easytrac-modules@v1.0.4/modules/shared.js
-// @require      https://cdn.jsdelivr.net/gh/neokeeyyy/easytrac-modules@v1.0.4/modules/module-acs.js
-// @require      https://cdn.jsdelivr.net/gh/neokeeyyy/easytrac-modules@v1.0.4/modules/module-acs-rep.js
-// @require      https://cdn.jsdelivr.net/gh/neokeeyyy/easytrac-modules@v1.0.4/modules/module-stoolkit.js
-// @require      https://cdn.jsdelivr.net/gh/neokeeyyy/easytrac-modules@v1.0.4/modules/module-sales.js
-// @require      https://cdn.jsdelivr.net/gh/neokeeyyy/easytrac-modules@v1.0.4/modules/module-acuses.js
+// @require      https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js
+// @require      https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js
+// @require      https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js
+// @require      https://cdn.jsdelivr.net/gh/neokeeyyy/easytrac-modules@v2.0.0/modules/shared.js
+// @require      https://cdn.jsdelivr.net/gh/neokeeyyy/easytrac-modules@v2.0.0/modules/module-acs.js
+// @require      https://cdn.jsdelivr.net/gh/neokeeyyy/easytrac-modules@v2.0.0/modules/module-acs-rep.js
+// @require      https://cdn.jsdelivr.net/gh/neokeeyyy/easytrac-modules@v2.0.0/modules/module-stoolkit.js
+// @require      https://cdn.jsdelivr.net/gh/neokeeyyy/easytrac-modules@v2.0.0/modules/module-sales.js
+// @require      https://cdn.jsdelivr.net/gh/neokeeyyy/easytrac-modules@v2.0.0/modules/module-acuses.js
 // @updateURL    https://raw.githubusercontent.com/neokeeyyy/easytrac-modules/main/main/main.user.js
 // @downloadURL  https://raw.githubusercontent.com/neokeeyyy/easytrac-modules/main/main/main.user.js
 // @run-at       document-idle
@@ -69,8 +73,13 @@
     }
   };
 
-  /* ---- 2. jQuery ---- */
+  /* ---- 2. jQuery y ventana de página ---- */
+  // ET.$ = jQuery del sandbox (@require). ET.win = ventana real de la página.
+  // ET.$page = jQuery DE LA PÁGINA (con DataTables, validate, datepicker,
+  // moment y demás plugins de SIRETRAC): es el que deben usar los backends.
   ET.$ = window.jQuery || window.$ || null;
+  ET.win = (typeof unsafeWindow !== 'undefined') ? unsafeWindow : window;
+  ET.$page = ET.win.jQuery || ET.win.$ || ET.$;
 
   /* ---- 3. Event bus (complementario a shared.js) ---- */
   var _handlers = {};
@@ -154,8 +163,7 @@
       return;
     }
     if (typeof mod.init !== 'function') {
-      console.warn('[ET Main] Módulo sin init():', name);
-      initResults[name] = { ok: false, error: 'sin init' };
+      initResults[name] = { ok: true, note: 'sin init' };
       return;
     }
     try {
@@ -173,27 +181,7 @@
 
   ET.utils.verboseLog('main', { results: initResults, version: ET.version });
 
-  /* ---- 7. UI global: botón de emergencia ---- */
-  var emergencyBtn = document.createElement('button');
-  emergencyBtn.id = 'et-emergency';
-  emergencyBtn.textContent = 'ET';
-  emergencyBtn.title = 'EASYTRAC — estado de módulos';
-  emergencyBtn.style.cssText = 'position:fixed;bottom:8px;right:8px;z-index:2147483647;' +
-    'background:#1d3557;color:#fff;border:none;border-radius:50%;width:36px;height:36px;' +
-    'font:bold 14px Arial,sans-serif;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.4);';
-  emergencyBtn.addEventListener('click', function () {
-    var lines = [];
-    modOrder.forEach(function (n) {
-      var m = ET.modules[n];
-      if (!m) { lines.push(n + ': NO CARGADO'); return; }
-      var status = m.enabled ? (m.error ? 'ERROR: ' + m.error : 'OK') : 'DISABLED';
-      lines.push(n + ' v' + m.version + ': ' + status);
-    });
-    alert('EASYTRAC v' + ET.version + '\n\n' + lines.join('\n'));
-  });
-  document.body.appendChild(emergencyBtn);
-
-  /* ---- 8. Exportar para debug ---- */
+  /* ---- 7. Exportar para debug ---- */
   window.ET_DEBUG = {
     initResults: initResults,
     modules: ET.modules,
@@ -201,7 +189,7 @@
     config: ET.config
   };
 
-  /* ---- 9. Notificar que todo está listo ---- */
+  /* ---- 8. Notificar que todo está listo ---- */
   ET.emit('easytrac:ready', { version: ET.version, results: initResults });
 
 })();
