@@ -1,7 +1,7 @@
 ﻿// ==UserScript==
 // @name         SToolkit
 // @namespace    siretrac.stoolkit
-// @version      1.4.0
+// @version      1.4.1
 // @match        https://siretrac.cne.gob.mx/GasLP/Ventas/RegistroVentaDisPla
 // @match        https://siretrac.cne.gob.mx/GasLP/Ventas/RegistroVentaES
 // @match        https://siretrac.cne.gob.mx/GasLP/Compras/NuevoRegistro_IngresaDatos
@@ -11,12 +11,11 @@
 
 (function () {
   'use strict';
-  if (typeof jQuery === 'undefined' || typeof $ === 'undefined') return;
-  if (!$('#idFechaVenta').length && !$('#idFechaCompra').length) return;
-
-  var esDisPla = $('#idtblVentasEntidad').length > 0;
-  var esCompra = $('#idFechaCompra').length > 0;
-  var esES = !esDisPla && !esCompra && $('#idVolumenVehiculo').length > 0;
+  var jQueryOk = (typeof jQuery !== 'undefined' && typeof $ !== 'undefined');
+  var esDisPla = jQueryOk && $('#idtblVentasEntidad').length > 0;
+  var esCompra = jQueryOk && $('#idFechaCompra').length > 0;
+  var esES = jQueryOk && !esDisPla && !esCompra && $('#idVolumenVehiculo').length > 0;
+  var canRun = jQueryOk && (esDisPla || esCompra || esES);
 
   var fechaForzada = null;
   var _validaWrapped = false;
@@ -30,6 +29,7 @@
     '<button id="stoolkit-fecha-cal" type="button" style="background:#cfcfcf;border:1px solid #b0b0b0;border-radius:4px;padding:4px 7px;cursor:pointer;color:#4d4d4d;margin-right:6px"><span class="glyphicon glyphicon-calendar"></span></button>' +
     '<button id="stoolkit-fecha-btn" style="background:#2EA836;color:#fff;border:none;border-radius:4px;padding:5px 10px;cursor:pointer;font-weight:bold">Forzar fecha</button>';
   document.body.appendChild(panel);
+  if (!canRun) panel.style.display = 'none';
 
   (function inicializaCalendario() {
     if (typeof $.fn.datepicker === 'undefined') return;
@@ -95,14 +95,14 @@
   });
 
   function init() {
-    ET.utils.verboseLog('stoolkit', { version: '1.4.0', status: 'init' });
+    ET.utils.verboseLog('stoolkit', { version: '1.4.1', status: 'init' });
   }
 
   function destroy() {}
 
   ET.register({
     name: 'stoolkit',
-    version: '1.4.0',
+    version: '1.4.1',
     init: init,
     destroy: destroy,
     css: '',

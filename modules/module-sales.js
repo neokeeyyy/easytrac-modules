@@ -1,7 +1,7 @@
 ﻿// ==UserScript==
 // @name         SIRETRAC Auto-fill Registro de Venta
 // @namespace    siretrac-autofill
-// @version      1.5.0
+// @version      1.5.1
 // @description  Al pegar el bloque de ventas de tu Excel, llena fecha, autoconsumo y las filas de Auto-tanque y Recipientes en la pÃ¡gina de registro de ventas de SIRETRAC. Verifica cada campo con el "check verde" y reintenta hasta 3 veces para evitar ceros en el acuse. Pide confirmaciÃ³n antes de registrar cualquier dÃ­a/bloque como "Sin venta".
 // @match        https://siretrac.cne.gob.mx/GasLP/Ventas/RegistroVentaDisPla
 // @match        https://siretrac.cne.gob.mx/GasLP/Ventas/RegistroVentaES
@@ -12,11 +12,9 @@
 (function () {
     'use strict';
 
-    if (typeof jQuery === 'undefined' || typeof $ === 'undefined') return;
-
-    var esPaginaDisPla = $('#idtblVentasEntidad').length > 0;
-    var esPaginaES = !esPaginaDisPla && $('#idVolumenVehiculo').length > 0;
-    if (!esPaginaDisPla && !esPaginaES) return;
+    var jQueryOk = (typeof jQuery !== 'undefined' && typeof $ !== 'undefined');
+    var esPaginaDisPla = jQueryOk && $('#idtblVentasEntidad').length > 0;
+    var esPaginaES = jQueryOk && !esPaginaDisPla && $('#idVolumenVehiculo').length > 0;
 
     var RE_FECHA = /^(lunes|martes|mi[eÃ©]rcoles|jueves|viernes|s[aÃ¡]bado|domingo),\s*(\d{1,2})\s+de\s+([a-zÃ¡Ã©Ã­Ã³ÃºÃ±Ã¼]+)\s+de\s+(\d{4})$/i;
     var MESES = { enero: 1, febrero: 2, marzo: 3, abril: 4, mayo: 5, junio: 6, julio: 7, agosto: 8, septiembre: 9, setiembre: 9, octubre: 10, noviembre: 11, diciembre: 12 };
@@ -680,14 +678,14 @@
     });
 
   function init() {
-    ET.utils.verboseLog('sales', { version: '1.5.0', status: 'init' });
+    ET.utils.verboseLog('sales', { version: '1.5.1', status: 'init' });
   }
 
   function destroy() {}
 
   ET.register({
     name: 'sales',
-    version: '1.5.0',
+    version: '1.5.1',
     init: init,
     destroy: destroy,
     css: '',

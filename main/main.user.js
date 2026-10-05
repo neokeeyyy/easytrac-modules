@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         EASYTRAC Main
 // @namespace    easytrac.main
-// @version      2.0.0
+// @version      2.0.1
 // @description  Orquestador modular EASYTRAC — automatización SIRETRAC (Gas LP)
 // @author       ojuel
 // @match        https://siretrac.cne.gob.mx/*
@@ -16,12 +16,12 @@
 // @require      https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js
 // @require      https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js
 // @require      https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js
-// @require      https://cdn.jsdelivr.net/gh/neokeeyyy/easytrac-modules@v2.0.0/modules/shared.js
-// @require      https://cdn.jsdelivr.net/gh/neokeeyyy/easytrac-modules@v2.0.0/modules/module-acs.js
-// @require      https://cdn.jsdelivr.net/gh/neokeeyyy/easytrac-modules@v2.0.0/modules/module-acs-rep.js
-// @require      https://cdn.jsdelivr.net/gh/neokeeyyy/easytrac-modules@v2.0.0/modules/module-stoolkit.js
-// @require      https://cdn.jsdelivr.net/gh/neokeeyyy/easytrac-modules@v2.0.0/modules/module-sales.js
-// @require      https://cdn.jsdelivr.net/gh/neokeeyyy/easytrac-modules@v2.0.0/modules/module-acuses.js
+// @require      https://cdn.jsdelivr.net/gh/neokeeyyy/easytrac-modules@v2.0.1/modules/shared.js
+// @require      https://cdn.jsdelivr.net/gh/neokeeyyy/easytrac-modules@v2.0.1/modules/module-acs.js
+// @require      https://cdn.jsdelivr.net/gh/neokeeyyy/easytrac-modules@v2.0.1/modules/module-acs-rep.js
+// @require      https://cdn.jsdelivr.net/gh/neokeeyyy/easytrac-modules@v2.0.1/modules/module-stoolkit.js
+// @require      https://cdn.jsdelivr.net/gh/neokeeyyy/easytrac-modules@v2.0.1/modules/module-sales.js
+// @require      https://cdn.jsdelivr.net/gh/neokeeyyy/easytrac-modules@v2.0.1/modules/module-acuses.js
 // @updateURL    https://raw.githubusercontent.com/neokeeyyy/easytrac-modules/main/main/main.user.js
 // @downloadURL  https://raw.githubusercontent.com/neokeeyyy/easytrac-modules/main/main/main.user.js
 // @run-at       document-idle
@@ -181,7 +181,68 @@
 
   ET.utils.verboseLog('main', { results: initResults, version: ET.version });
 
-  /* ---- 7. Exportar para debug ---- */
+  /* ---- 7. Botón flotante + panel de pestañas ---- */
+  (function () {
+    var btn = document.createElement('button');
+    btn.id = 'et-floating-button';
+    btn.type = 'button';
+    btn.textContent = 'EASYTRAC';
+    btn.title = 'Abrir herramientas EASYTRAC';
+    btn.style.cssText = 'position:fixed;right:12px;bottom:12px;z-index:2147483647;background:#1d3557;color:#fff;border:none;border-radius:999px;padding:9px 14px;font:bold 12px roboto,Arial,sans-serif;cursor:pointer;box-shadow:0 3px 10px rgba(0,0,0,.4);user-select:none;letter-spacing:.4px;';
+
+    var panel = document.createElement('div');
+    panel.id = 'et-floating-panel';
+    panel.style.cssText = 'position:fixed;top:60px;right:12px;z-index:2147483647;width:360px;max-height:70vh;overflow:auto;display:none;background:#fff;color:#222;border:1px solid #6f6f6f;border-radius:6px;box-shadow:0 4px 18px rgba(0,0,0,.35);font:12px roboto,Arial,sans-serif;resize:both;';
+
+    var tabs = document.createElement('div');
+    tabs.style.cssText = 'display:flex;flex-wrap:wrap;gap:4px;padding:8px;border-bottom:1px solid #ddd;background:#f1f1f1;';
+    var body = document.createElement('div');
+    body.style.cssText = 'padding:10px;';
+
+    function showTab(name) {
+      var mod = ET.modules[name];
+      var page = initResults[name] || {};
+      var html = '<b style="font-size:13px">' + name + '</b><br>' +
+        'versión: ' + (mod && mod.version ? mod.version : '—') + '<br>' +
+        'estado: ' + (page.ok ? 'ok' : (page.error || 'sin iniciar')) + '<br>';
+      if (mod && mod.error) html += 'error: ' + mod.error + '<br>';
+      if (mod && mod.css) html += 'css: sí<br>';
+      var keys = mod && mod.api ? Object.keys(mod.api) : [];
+      html += 'api: ' + (keys.length ? keys.join(', ') : '—') + '<br>';
+      html += '<div style="margin-top:8px;padding-top:6px;border-top:1px solid #eee;color:#555">' +
+        'Este panel superpone herramientas sin cambiar el layout de SIRETRAC.</div>';
+      body.innerHTML = html;
+      var bbar = tabs.querySelectorAll('button');
+      for (var i = 0; i < bbar.length; i++) bbar[i].style.fontWeight = (bbar[i].dataset.tab === name ? 'bold' : 'normal');
+    }
+
+    modOrder.forEach(function (name) {
+      var t = document.createElement('button');
+      t.type = 'button';
+      t.textContent = name;
+      t.dataset.tab = name;
+      t.style.cssText = 'border:1px solid #bbb;background:#fff;color:#222;border-radius:4px;padding:4px 7px;cursor:pointer;font-size:11px;';
+      t.addEventListener('click', function () { showTab(name); });
+      tabs.appendChild(t);
+    });
+
+    panel.appendChild(tabs);
+    panel.appendChild(body);
+    showTab(modOrder[0]);
+
+    btn.addEventListener('click', function () {
+      panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+    });
+
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') panel.style.display = 'none';
+    });
+
+    document.body.appendChild(btn);
+    document.body.appendChild(panel);
+  })();
+
+  /* ---- 8. Exportar para debug ---- */
   window.ET_DEBUG = {
     initResults: initResults,
     modules: ET.modules,

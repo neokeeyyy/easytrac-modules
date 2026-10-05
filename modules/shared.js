@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         EASYTRAC Shared
 // @namespace    easytrac.shared
-// @version      1.0.0
+// @version      1.0.1
 // @description  Namespace ET, config, estado, utils, event bus — base para todos los módulos
 // @grant        none
 // @run-at       document-start
@@ -59,7 +59,7 @@
       version: module.version || '0.0.0',
       init: module.init || null,
       destroy: module.destroy || null,
-      api: {},
+      api: module.api || {},
       css: module.css || '',
       enabled: true,
       error: null
@@ -352,6 +352,6 @@
 
   /* ============ EXPORTAR ============ */
   // shared.js no tiene init/destroy propios — el main lo registra vacío
-  ET.register({ name: 'shared', version: '1.0.0', init: null, destroy: null });
+  ET.register({ name: 'shared', version: '1.0.1', init: null, destroy: null });
 
 })();
