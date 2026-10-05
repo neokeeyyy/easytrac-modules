@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         EASYTRAC Acuses
 // @namespace    easytrac.module.acuses
-// @version      3.2
+// @version      3.3
 // @description  Módulo Descarga de acuses — ZIP por Permiso/Subtipo, PDF por estación, CSV
 // @run-at       document-idle
 // ==/UserScript==
@@ -166,7 +166,7 @@
     var codigos = new Set(permisos.map(function (p) { return p.codigo; }));
     var pantalla = permisoEnPantalla(codigos);
     var activo = permisos.find(function (p) { return p.codigo === pantalla; }) || null;
-    var lee = function (extra) { return (await post(BUSCA, Object.assign({ filtro: '', pagina: 1 }, extra || {}))).json; };
+    var lee = async function (extra) { return (await post(BUSCA, Object.assign({ filtro: '', pagina: 1 }, extra || {}))).json; };
 
     var fBase = firma(await lee());
     var A = permisos.find(function (p) { return !activo || p.codigo !== activo.codigo; }) || permisos[0];
