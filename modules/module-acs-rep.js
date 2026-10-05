@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         EASYTRAC ACS Repetir
 // @namespace    easytrac.module.acsrep
-// @version      1.6.0
+// @version      1.7.0
 // @description  Módulo ACS Repetir Compras — repetición automática + traspasos + presets
 // @grant        unsafeWindow
 // @run-at       document-idle
@@ -61,7 +61,7 @@
 
   var pageWin = (typeof unsafeWindow !== 'undefined') ? unsafeWindow : window;
   var ultimoRegistrado = '', traspasoLoopActivo = false;
-  var _destroyed = false;
+  var _destroyed = false, _iniciado = false;
 
   /* ---- Helpers ---- */
   function log(tag, d) {
@@ -1015,10 +1015,12 @@
   /* ===== INICIO ===== */
   function iniciar() {
     if (_destroyed) return;
+    if (!document.body) { window.addEventListener('DOMContentLoaded', iniciar); return; }
+    if (_iniciado) return;
+    _iniciado = true;
     instalarParchesRed();
     instalarInterceptaNavegacion();
     instalarClickGuardar();
-    if (!document.body) { window.addEventListener('DOMContentLoaded', iniciar); return; }
     instalarPasteTraspasos();
     iniciarObservador();
     iniciarPill();
@@ -1035,7 +1037,7 @@
   ET.register({
     name: 'acsRep',
     version: '1.6.0',
-    init: init,
+    init: iniciar,
     destroy: destroy,
     css: css,
     api: {
