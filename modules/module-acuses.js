@@ -1400,7 +1400,7 @@
   /* ---------- Init / Destroy ---------- */
   function init(et) {
     crearPanel();
-    ET.utils.verboseLog('acuses', { version: '3.2', status: 'init' });
+    ET.utils.verboseLog('acuses', { version: '3.3', status: 'init' });
   }
 
   function destroy() {
@@ -1416,7 +1416,7 @@
   /* ---------- Registrar ---------- */
   ET.register({
     name: 'acuses',
-    version: '3.2',
+    version: '3.3',
     init: init,
     destroy: destroy,
     css: css,

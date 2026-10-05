@@ -1036,7 +1036,7 @@
   /* ===== REGISTRAR ===== */
   ET.register({
     name: 'acsRep',
-    version: '1.6.0',
+    version: '1.7.0',
     init: iniciar,
     destroy: destroy,
     css: css,
