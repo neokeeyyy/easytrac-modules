@@ -11,7 +11,7 @@ Este repositorio centraliza varias funcionalidades modulares bajo un mismo names
 - llenado automático de formularios
 - validación y pre-carga de datos
 - automatización de registros y ventas
-- manipulación de fechas en formularios
+- gestión de fechas y formularios
 - descarga y análisis de acuses/documentos
 - manejo reutilizable de configuración, UI y eventos
 
@@ -99,16 +99,16 @@ Características destacadas:
 Este módulo es una de las piezas más prácticas del proyecto, ya que automatiza el pegado de datos tabulares para completar procesos de venta.
 
 ### 6) `modules/module-stoolkit.js`
-Módulo de utilidad para forzar fechas en formularios.
+Módulo de utilidad para apoyo en formularios y validación de fechas.
 
 Incluye:
-- panel flotante con input de fecha
-- validación del formato `DD/MM/YYYY`
-- modificación de fechas en formularios de compra/venta
-- manejo de la lógica de validación del sistema para que la fecha forzada no sea rechazada
-- compatibilidad con calendario de jQuery si está disponible
+- panel flotante con entrada de fecha
+- validación del formato de calendario
+- ajustes auxiliares para formularios de compra/venta
+- compatibilidad con herramientas de UI si están disponibles
+- soporte para mantener flujo consistente en pantallas con requisitos de fecha
 
-Es un módulo de soporte muy útil para escenarios donde la fecha del sistema debe ajustarse manualmente.
+Es un módulo de soporte práctico para escenarios específicos dentro del proceso operativo.
 
 ### 7) `modules/module-acuses.js`
 Módulo orientado a gestión y análisis de acuses/documentos.
@@ -168,7 +168,7 @@ El flujo típico es:
 - Revisar el estado del sistema mediante el botón global `ET` que crea el orquestador.
 - Utilizar los módulos según la operación a realizar:
   - `sales` para importar y completar ventas
-  - `stoolkit` para forzar fecha
+  - `stoolkit` para apoyo en formularios y validación de fechas
   - `acuses` para analizar y descargar documentos
   - `acs` y `acs-rep` para flujos de registro y continuidad
 
