@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         EASYTRAC Main
 // @namespace    easytrac.main
-// @version      2.0.1
+// @version      2.0.2
 // @description  Orquestador modular EASYTRAC — automatización SIRETRAC (Gas LP)
 // @author       ojuel
 // @match        https://siretrac.cne.gob.mx/*
@@ -16,12 +16,12 @@
 // @require      https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js
 // @require      https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js
 // @require      https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js
-// @require      https://cdn.jsdelivr.net/gh/neokeeyyy/easytrac-modules@v2.0.1/modules/shared.js
-// @require      https://cdn.jsdelivr.net/gh/neokeeyyy/easytrac-modules@v2.0.1/modules/module-acs.js
-// @require      https://cdn.jsdelivr.net/gh/neokeeyyy/easytrac-modules@v2.0.1/modules/module-acs-rep.js
-// @require      https://cdn.jsdelivr.net/gh/neokeeyyy/easytrac-modules@v2.0.1/modules/module-stoolkit.js
-// @require      https://cdn.jsdelivr.net/gh/neokeeyyy/easytrac-modules@v2.0.1/modules/module-sales.js
-// @require      https://cdn.jsdelivr.net/gh/neokeeyyy/easytrac-modules@v2.0.1/modules/module-acuses.js
+// @require      https://cdn.jsdelivr.net/gh/neokeeyyy/easytrac-modules@v2.0.2/modules/shared.js
+// @require      https://cdn.jsdelivr.net/gh/neokeeyyy/easytrac-modules@v2.0.2/modules/module-acs.js
+// @require      https://cdn.jsdelivr.net/gh/neokeeyyy/easytrac-modules@v2.0.2/modules/module-acs-rep.js
+// @require      https://cdn.jsdelivr.net/gh/neokeeyyy/easytrac-modules@v2.0.2/modules/module-stoolkit.js
+// @require      https://cdn.jsdelivr.net/gh/neokeeyyy/easytrac-modules@v2.0.2/modules/module-sales.js
+// @require      https://cdn.jsdelivr.net/gh/neokeeyyy/easytrac-modules@v2.0.2/modules/module-acuses.js
 // @updateURL    https://raw.githubusercontent.com/neokeeyyy/easytrac-modules/main/main/main.user.js
 // @downloadURL  https://raw.githubusercontent.com/neokeeyyy/easytrac-modules/main/main/main.user.js
 // @run-at       document-idle
@@ -181,18 +181,23 @@
 
   ET.utils.verboseLog('main', { results: initResults, version: ET.version });
 
-  /* ---- 7. Botón flotante + panel de pestañas ---- */
+  /* ---- 7. Botón flotante redondo + panel de pestañas ---- */
   (function () {
+    var fa = document.createElement('link');
+    fa.rel = 'stylesheet';
+    fa.href = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css';
+    document.head.appendChild(fa);
+
     var btn = document.createElement('button');
     btn.id = 'et-floating-button';
     btn.type = 'button';
-    btn.textContent = 'EASYTRAC';
     btn.title = 'Abrir herramientas EASYTRAC';
-    btn.style.cssText = 'position:fixed;right:12px;bottom:12px;z-index:2147483647;background:#1d3557;color:#fff;border:none;border-radius:999px;padding:9px 14px;font:bold 12px roboto,Arial,sans-serif;cursor:pointer;box-shadow:0 3px 10px rgba(0,0,0,.4);user-select:none;letter-spacing:.4px;';
+    btn.innerHTML = '<i class="fa-solid fa-universal-access"></i>';
+    btn.style.cssText = 'position:fixed;right:12px;bottom:12px;z-index:2147483647;background:#6f6f6f;color:#fff;border:none;border-radius:50%;width:44px;height:44px;cursor:pointer;box-shadow:0 3px 10px rgba(0,0,0,.4);user-select:none;font-size:20px;line-height:44px;text-align:center;padding:0;';
 
     var panel = document.createElement('div');
     panel.id = 'et-floating-panel';
-    panel.style.cssText = 'position:fixed;top:60px;right:12px;z-index:2147483647;width:360px;max-height:70vh;overflow:auto;display:none;background:#fff;color:#222;border:1px solid #6f6f6f;border-radius:6px;box-shadow:0 4px 18px rgba(0,0,0,.35);font:12px roboto,Arial,sans-serif;resize:both;';
+    panel.style.cssText = 'position:fixed;top:60px;right:12px;z-index:2147483647;width:380px;max-height:72vh;overflow:auto;display:none;background:#fff;color:#222;border:1px solid #6f6f6f;border-radius:6px;box-shadow:0 4px 18px rgba(0,0,0,.35);font:12px roboto,Arial,sans-serif;resize:both;';
 
     var tabs = document.createElement('div');
     tabs.style.cssText = 'display:flex;flex-wrap:wrap;gap:4px;padding:8px;border-bottom:1px solid #ddd;background:#f1f1f1;';
@@ -202,18 +207,53 @@
     function showTab(name) {
       var mod = ET.modules[name];
       var page = initResults[name] || {};
-      var html = '<b style="font-size:13px">' + name + '</b><br>' +
+      body.innerHTML = '';
+      var t = document.createElement('div');
+      t.innerHTML = '<b style="font-size:13px">' + name + '</b><br>' +
         'versión: ' + (mod && mod.version ? mod.version : '—') + '<br>' +
-        'estado: ' + (page.ok ? 'ok' : (page.error || 'sin iniciar')) + '<br>';
-      if (mod && mod.error) html += 'error: ' + mod.error + '<br>';
-      if (mod && mod.css) html += 'css: sí<br>';
+        'estado: ' + (page.ok ? 'ok' : (page.error || 'sin iniciar')) + '<br>' +
+        (mod && mod.error ? 'error: ' + mod.error + '<br>' : '') +
+        (mod && mod.css ? 'css: sí<br>' : '');
+      body.appendChild(t);
+
       var keys = mod && mod.api ? Object.keys(mod.api) : [];
-      html += 'api: ' + (keys.length ? keys.join(', ') : '—') + '<br>';
-      html += '<div style="margin-top:8px;padding-top:6px;border-top:1px solid #eee;color:#555">' +
-        'Este panel superpone herramientas sin cambiar el layout de SIRETRAC.</div>';
-      body.innerHTML = html;
-      var bbar = tabs.querySelectorAll('button');
-      for (var i = 0; i < bbar.length; i++) bbar[i].style.fontWeight = (bbar[i].dataset.tab === name ? 'bold' : 'normal');
+      var out = document.createElement('pre');
+      out.style.cssText = 'white-space:pre-wrap;background:#f8f8f8;border:1px solid #ddd;padding:6px;margin-top:8px;max-height:140px;overflow:auto;';
+      out.textContent = keys.length ? 'API disponible. Usa los botones de abajo.' : 'Este módulo no expone API directa en ET.';
+      body.appendChild(out);
+
+      if (keys.length) {
+        var wrap = document.createElement('div');
+        wrap.style.cssText = 'display:flex;flex-wrap:wrap;gap:4px;margin-top:8px;';
+        keys.forEach(function (k) {
+          var b = document.createElement('button');
+          b.type = 'button';
+          b.textContent = k;
+          b.style.cssText = 'background:#6f6f6f;color:#fff;border:none;border-radius:999px;padding:5px 8px;font-size:11px;cursor:pointer;';
+          b.addEventListener('click', function () {
+            try {
+              var r = mod.api[k]();
+              if (r && typeof r.then === 'function') {
+                r.then(function (v) { out.textContent = typeof v === 'undefined' ? 'ok' : JSON.stringify(v, null, 2); },
+                       function (e) { out.textContent = 'ERROR: ' + (e && e.message ? e.message : e); });
+              } else {
+                out.textContent = typeof r === 'undefined' ? 'ok' : JSON.stringify(r, null, 2);
+              }
+            } catch (e) {
+              out.textContent = 'ERROR: ' + e.message;
+            }
+          });
+          wrap.appendChild(b);
+        });
+        body.appendChild(wrap);
+      }
+
+      var tabsButtons = tabs.querySelectorAll('button');
+      for (var i = 0; i < tabsButtons.length; i++) {
+        tabsButtons[i].style.fontWeight = (tabsButtons[i].dataset.tab === name ? 'bold' : 'normal');
+        tabsButtons[i].style.background = (tabsButtons[i].dataset.tab === name ? '#6f6f6f' : '#fff');
+        tabsButtons[i].style.color = (tabsButtons[i].dataset.tab === name ? '#fff' : '#222');
+      }
     }
 
     modOrder.forEach(function (name) {
@@ -221,7 +261,7 @@
       t.type = 'button';
       t.textContent = name;
       t.dataset.tab = name;
-      t.style.cssText = 'border:1px solid #bbb;background:#fff;color:#222;border-radius:4px;padding:4px 7px;cursor:pointer;font-size:11px;';
+      t.style.cssText = 'border:1px solid #bbb;background:#fff;color:#222;border-radius:999px;padding:5px 9px;cursor:pointer;font-size:11px;';
       t.addEventListener('click', function () { showTab(name); });
       tabs.appendChild(t);
     });
