@@ -2,7 +2,7 @@
 // @name         EASYTRAC Main
 // @namespace    easytrac.main
 // @version      2.0.2
-// @description  Orquestador modular EASYTRAC ‚Äî automatizaci√≥n SIRETRAC (Gas LP)
+// @description  Orquestador modular EASYTRAC ó automatizaciÛn SIRETRAC (Gas LP)
 // @author       ojuel
 // @match        https://siretrac.cne.gob.mx/*
 // @match        http://siretrac.cne.gob.mx/*
@@ -32,18 +32,18 @@
   'use strict';
 
   /* ================================================================
-   *  EASYTRAC MAIN ‚Äî Orquestador modular
+   *  EASYTRAC MAIN ó Orquestador modular
    *
-   *  1. Inicializa el namespace window.ET (shared.js ya lo cre√≥)
+   *  1. Inicializa el namespace window.ET (shared.js ya lo creÛ)
    *  2. Exponer GM APIs al namespace
    *  3. Inyectar CSS global
-   *  4. Iniciar cada m√≥dulo registrado
-   *  5. UI global: bot√≥n de emergencia + panel de estado
+   *  4. Iniciar cada mÛdulo registrado
+   *  5. UI global: botÛn de emergencia + panel de estado
    * ================================================================ */
 
   var ET = window.ET;
   if (!ET) {
-    console.error('[ET Main] window.ET no existe. ¬øshared.js se carg√≥?');
+    console.error('[ET Main] window.ET no existe. øshared.js se cargÛ?');
     return;
   }
 
@@ -73,10 +73,10 @@
     }
   };
 
-  /* ---- 2. jQuery y ventana de p√°gina ---- */
-  // ET.$ = jQuery del sandbox (@require). ET.win = ventana real de la p√°gina.
-  // ET.$page = jQuery DE LA P√ÅGINA (con DataTables, validate, datepicker,
-  // moment y dem√°s plugins de SIRETRAC): es el que deben usar los backends.
+  /* ---- 2. jQuery y ventana de p·gina ---- */
+  // ET.$ = jQuery del sandbox (@require). ET.win = ventana real de la p·gina.
+  // ET.$page = jQuery DE LA P¡GINA (con DataTables, validate, datepicker,
+  // moment y dem·s plugins de SIRETRAC): es el que deben usar los backends.
   ET.$ = window.jQuery || window.$ || null;
   ET.win = (typeof unsafeWindow !== 'undefined') ? unsafeWindow : window;
   ET.$page = ET.win.jQuery || ET.win.$ || ET.$;
@@ -151,14 +151,14 @@
   ET.utils.$ = function (sel) { return document.querySelector(sel); };
   ET.utils.$$ = function (sel) { return document.querySelectorAll(sel); };
 
-  /* ---- 6. Inicializar m√≥dulos ---- */
+  /* ---- 6. Inicializar mÛdulos ---- */
   var modOrder = ['shared', 'acs', 'acsRep', 'stoolkit', 'sales', 'acuses'];
   var initResults = {};
 
   modOrder.forEach(function (name) {
     var mod = ET.modules[name];
     if (!mod) {
-      console.warn('[ET Main] M√≥dulo no registrado:', name);
+      console.warn('[ET Main] MÛdulo no registrado:', name);
       initResults[name] = { ok: false, error: 'no registrado' };
       return;
     }
@@ -181,105 +181,110 @@
 
   ET.utils.verboseLog('main', { results: initResults, version: ET.version });
 
-  /* ---- 7. Bot√≥n flotante redondo + panel de pesta√±as ---- */
+  /* ---- 7. Ventana flotante de herramientas ---- */
   (function () {
-    var fa = document.createElement('link');
-    fa.rel = 'stylesheet';
-    fa.href = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css';
-    document.head.appendChild(fa);
+    var link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css';
+    document.head.appendChild(link);
 
     var btn = document.createElement('button');
     btn.id = 'et-floating-button';
     btn.type = 'button';
     btn.title = 'Abrir herramientas EASYTRAC';
     btn.innerHTML = '<i class="fa-solid fa-universal-access"></i>';
-    btn.style.cssText = 'position:fixed;right:12px;bottom:12px;z-index:2147483647;background:#6f6f6f;color:#fff;border:none;border-radius:50%;width:44px;height:44px;cursor:pointer;box-shadow:0 3px 10px rgba(0,0,0,.4);user-select:none;font-size:20px;line-height:44px;text-align:center;padding:0;';
+    btn.style.cssText = 'position:fixed;right:16px;bottom:16px;z-index:2147483647;width:48px;height:48px;border-radius:50%;border:none;background:#6f6f6f;color:#fff;font-size:20px;cursor:pointer;box-shadow:0 3px 10px rgba(0,0,0,.35);';
 
-    var panel = document.createElement('div');
-    panel.id = 'et-floating-panel';
-    panel.style.cssText = 'position:fixed;top:60px;right:12px;z-index:2147483647;width:380px;max-height:72vh;overflow:auto;display:none;background:#fff;color:#222;border:1px solid #6f6f6f;border-radius:6px;box-shadow:0 4px 18px rgba(0,0,0,.35);font:12px roboto,Arial,sans-serif;resize:both;';
+    var win = document.createElement('div');
+    win.id = 'et-floating-window';
+    win.style.cssText = 'position:fixed;top:60px;right:16px;width:420px;max-height:80vh;overflow:auto;z-index:2147483646;display:none;background:#fff;color:#222;border:1px solid #6f6f6f;border-radius:6px;box-shadow:0 4px 18px rgba(0,0,0,.35);font:12px roboto,Arial,sans-serif;resize:both;';
 
-    var tabs = document.createElement('div');
-    tabs.style.cssText = 'display:flex;flex-wrap:wrap;gap:4px;padding:8px;border-bottom:1px solid #ddd;background:#f1f1f1;';
-    var body = document.createElement('div');
-    body.style.cssText = 'padding:10px;';
+    var tabbar = document.createElement('div');
+    tabbar.style.cssText = 'display:flex;flex-wrap:wrap;gap:4px;padding:8px;border-bottom:1px solid #ddd;background:#f1f1f1;';
+    var pane = document.createElement('div');
+    pane.style.cssText = 'padding:10px;';
 
-    function showTab(name) {
-      var mod = ET.modules[name];
-      var page = initResults[name] || {};
-      body.innerHTML = '';
-      var t = document.createElement('div');
-      t.innerHTML = '<b style="font-size:13px">' + name + '</b><br>' +
-        'versi√≥n: ' + (mod && mod.version ? mod.version : '‚Äî') + '<br>' +
-        'estado: ' + (page.ok ? 'ok' : (page.error || 'sin iniciar')) + '<br>' +
-        (mod && mod.error ? 'error: ' + mod.error + '<br>' : '') +
-        (mod && mod.css ? 'css: s√≠<br>' : '');
-      body.appendChild(t);
+    var sections = [
+      { id: 'autocompra', label: 'AUTOCOMPRA', modules: ['acs', 'acsRep'] },
+      { id: 'autoventa', label: 'AUTOVENTA', modules: ['sales'] },
+      { id: 'stoolkit', label: 'TOOLKIT', modules: ['stoolkit'] },
+      { id: 'acuses', label: 'ACUSES DOWNLOADER', modules: ['acuses'] }
+    ];
 
-      var keys = mod && mod.api ? Object.keys(mod.api) : [];
-      var out = document.createElement('pre');
-      out.style.cssText = 'white-space:pre-wrap;background:#f8f8f8;border:1px solid #ddd;padding:6px;margin-top:8px;max-height:140px;overflow:auto;';
-      out.textContent = keys.length ? 'API disponible. Usa los botones de abajo.' : 'Este m√≥dulo no expone API directa en ET.';
-      body.appendChild(out);
-
-      if (keys.length) {
-        var wrap = document.createElement('div');
-        wrap.style.cssText = 'display:flex;flex-wrap:wrap;gap:4px;margin-top:8px;';
-        keys.forEach(function (k) {
-          var b = document.createElement('button');
-          b.type = 'button';
-          b.textContent = k;
-          b.style.cssText = 'background:#6f6f6f;color:#fff;border:none;border-radius:999px;padding:5px 8px;font-size:11px;cursor:pointer;';
-          b.addEventListener('click', function () {
-            try {
-              var r = mod.api[k]();
-              if (r && typeof r.then === 'function') {
-                r.then(function (v) { out.textContent = typeof v === 'undefined' ? 'ok' : JSON.stringify(v, null, 2); },
-                       function (e) { out.textContent = 'ERROR: ' + (e && e.message ? e.message : e); });
-              } else {
-                out.textContent = typeof r === 'undefined' ? 'ok' : JSON.stringify(r, null, 2);
-              }
-            } catch (e) {
-              out.textContent = 'ERROR: ' + e.message;
-            }
+    function sectionHTML(ids) {
+      return ids.map(function (name) {
+        var mod = ET.modules[name];
+        var res = initResults[name] || {};
+        var html = '<div style="margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid #eee">';
+        html += '<b>' + name + '</b> ó v' + (mod && mod.version ? mod.version : '?') + ' ó ' + (res.ok ? 'ok' : (res.error || 'no registrado')) + '<br>';
+        if (mod && mod.api && Object.keys(mod.api).length) {
+          html += '<div style="margin-top:6px;display:flex;flex-wrap:wrap;gap:4px">';
+          Object.keys(mod.api).forEach(function (k) {
+            html += '<button type="button" data-mod="' + name + '" data-fn="' + k + '" style="background:#6f6f6f;color:#fff;border:none;border-radius:999px;padding:4px 8px;font-size:11px;cursor:pointer;">' + k + '</button>';
           });
-          wrap.appendChild(b);
-        });
-        body.appendChild(wrap);
-      }
+          html += '</div>';
+        }
+        html += '</div>';
+        return html;
+      }).join('');
+    }
 
-      var tabsButtons = tabs.querySelectorAll('button');
-      for (var i = 0; i < tabsButtons.length; i++) {
-        tabsButtons[i].style.fontWeight = (tabsButtons[i].dataset.tab === name ? 'bold' : 'normal');
-        tabsButtons[i].style.background = (tabsButtons[i].dataset.tab === name ? '#6f6f6f' : '#fff');
-        tabsButtons[i].style.color = (tabsButtons[i].dataset.tab === name ? '#fff' : '#222');
+    function showSection(idx) {
+      var s = sections[idx];
+      pane.innerHTML = sectionHTML(s.modules);
+      var buttons = tabbar.querySelectorAll('button');
+      for (var i = 0; i < buttons.length; i++) {
+        buttons[i].style.background = i === idx ? '#6f6f6f' : '#fff';
+        buttons[i].style.color = i === idx ? '#fff' : '#222';
       }
     }
 
-    modOrder.forEach(function (name) {
-      var t = document.createElement('button');
-      t.type = 'button';
-      t.textContent = name;
-      t.dataset.tab = name;
-      t.style.cssText = 'border:1px solid #bbb;background:#fff;color:#222;border-radius:999px;padding:5px 9px;cursor:pointer;font-size:11px;';
-      t.addEventListener('click', function () { showTab(name); });
-      tabs.appendChild(t);
+    sections.forEach(function (s, idx) {
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.textContent = s.label;
+      b.dataset.idx = String(idx);
+      b.style.cssText = 'border:1px solid #bbb;background:#fff;color:#222;border-radius:999px;padding:5px 9px;cursor:pointer;font-size:11px;';
+      b.addEventListener('click', function () { showSection(idx); });
+      tabbar.appendChild(b);
     });
 
-    panel.appendChild(tabs);
-    panel.appendChild(body);
-    showTab(modOrder[0]);
-
-    btn.addEventListener('click', function () {
-      panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+    pane.addEventListener('click', function (e) {
+      var b = e.target && e.target.closest ? e.target.closest('button[data-mod]') : null;
+      if (!b) return;
+      var modName = b.getAttribute('data-mod');
+      var fn = b.getAttribute('data-fn');
+      var mod = ET.modules[modName];
+      if (!mod || !mod.api || typeof mod.api[fn] !== 'function') return;
+      try {
+        var r = mod.api[fn]();
+        if (r && typeof r.then === 'function') {
+          r.then(function (v) {
+            var pre = pane.querySelector('pre[data-out="' + modName + '"]');
+            if (!pre) { pre = document.createElement('pre'); pre.setAttribute('data-out', modName); pane.appendChild(pre); }
+            pre.textContent = typeof v === 'undefined' ? 'ok' : JSON.stringify(v, null, 2);
+          }, function (e) {
+            var pre = pane.querySelector('pre[data-out="' + modName + '"]');
+            if (!pre) { pre = document.createElement('pre'); pre.setAttribute('data-out', modName); pane.appendChild(pre); }
+            pre.textContent = 'ERROR: ' + (e && e.message ? e.message : e);
+          });
+        }
+      } catch (e) {
+        var pre = pane.querySelector('pre[data-out="' + modName + '"]');
+        if (!pre) { pre = document.createElement('pre'); pre.setAttribute('data-out', modName); pane.appendChild(pre); }
+        pre.textContent = 'ERROR: ' + e.message;
+      }
     });
 
-    document.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape') panel.style.display = 'none';
-    });
+    win.appendChild(tabbar);
+    win.appendChild(pane);
+    showSection(0);
+
+    btn.addEventListener('click', function () { win.style.display = win.style.display === 'none' ? 'block' : 'none'; });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') win.style.display = 'none'; });
 
     document.body.appendChild(btn);
-    document.body.appendChild(panel);
+    document.body.appendChild(win);
   })();
 
   /* ---- 8. Exportar para debug ---- */
@@ -290,7 +295,7 @@
     config: ET.config
   };
 
-  /* ---- 8. Notificar que todo est√° listo ---- */
+  /* ---- 8. Notificar que todo est· listo ---- */
   ET.emit('easytrac:ready', { version: ET.version, results: initResults });
 
 })();
