@@ -2,7 +2,7 @@
 // @name         EASYTRAC Main
 // @namespace    easytrac.main
 // @version      2.0.3
-// @description  Orquestador modular EASYTRAC — automatización SIRETRAC (Gas LP)
+// @description  Orquestador modular EASYTRAC ï¿½ automatizaciï¿½n SIRETRAC (Gas LP)
 // @author       ojuel
 // @match        https://siretrac.cne.gob.mx/*
 // @match        http://siretrac.cne.gob.mx/*
@@ -17,11 +17,11 @@
 // @require      https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js
 // @require      https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js
 // @require      https://cdn.jsdelivr.net/gh/neokeeyyy/easytrac-modules@v2.0.3/modules/shared.js
-// @require      https://cdn.jsdelivr.net/gh/neokeeyyy/easytrac-modules@v2.0.3/modules/module-acs.js
-// @require      https://cdn.jsdelivr.net/gh/neokeeyyy/easytrac-modules@v2.0.3/modules/module-acs-rep.js
-// @require      https://cdn.jsdelivr.net/gh/neokeeyyy/easytrac-modules@v2.0.3/modules/module-stoolkit.js
-// @require      https://cdn.jsdelivr.net/gh/neokeeyyy/easytrac-modules@v2.0.3/modules/module-sales.js
-// @require      https://cdn.jsdelivr.net/gh/neokeeyyy/easytrac-modules@v2.0.3/modules/module-acuses.js
+// @require      https://cdn.jsdelivr.net/gh/neokeeyyy/easytrac-modules@v2.0.3/modules/backend/module-acs.js
+// @require      https://cdn.jsdelivr.net/gh/neokeeyyy/easytrac-modules@v2.0.3/modules/backend/module-acs-rep.js
+// @require      https://cdn.jsdelivr.net/gh/neokeeyyy/easytrac-modules@v2.0.3/modules/backend/module-stoolkit.js
+// @require      https://cdn.jsdelivr.net/gh/neokeeyyy/easytrac-modules@v2.0.3/modules/backend/module-sales.js
+// @require      https://cdn.jsdelivr.net/gh/neokeeyyy/easytrac-modules@v2.0.3/modules/backend/module-acuses.js
 // @updateURL    https://raw.githubusercontent.com/neokeeyyy/easytrac-modules/main/main/main.user.js
 // @downloadURL  https://raw.githubusercontent.com/neokeeyyy/easytrac-modules/main/main/main.user.js
 // @run-at       document-idle
@@ -32,18 +32,18 @@
   'use strict';
 
   /* ================================================================
-   *  EASYTRAC MAIN — Orquestador modular
+   *  EASYTRAC MAIN ï¿½ Orquestador modular
    *
-   *  1. Inicializa el namespace window.ET (shared.js ya lo creó)
+   *  1. Inicializa el namespace window.ET (shared.js ya lo creï¿½)
    *  2. Exponer GM APIs al namespace
    *  3. Inyectar CSS global
-   *  4. Iniciar cada módulo registrado
-   *  5. UI global: botón de emergencia + panel de estado
+   *  4. Iniciar cada mï¿½dulo registrado
+   *  5. UI global: botï¿½n de emergencia + panel de estado
    * ================================================================ */
 
   var ET = window.ET;
   if (!ET) {
-    console.error('[ET Main] window.ET no existe. ¿shared.js se cargó?');
+    console.error('[ET Main] window.ET no existe. ï¿½shared.js se cargï¿½?');
     return;
   }
 
@@ -73,10 +73,10 @@
     }
   };
 
-  /* ---- 2. jQuery y ventana de página ---- */
-  // ET.$ = jQuery del sandbox (@require). ET.win = ventana real de la página.
-  // ET.$page = jQuery DE LA PÁGINA (con DataTables, validate, datepicker,
-  // moment y demás plugins de SIRETRAC): es el que deben usar los backends.
+  /* ---- 2. jQuery y ventana de pï¿½gina ---- */
+  // ET.$ = jQuery del sandbox (@require). ET.win = ventana real de la pï¿½gina.
+  // ET.$page = jQuery DE LA Pï¿½GINA (con DataTables, validate, datepicker,
+  // moment y demï¿½s plugins de SIRETRAC): es el que deben usar los backends.
   ET.$ = window.jQuery || window.$ || null;
   ET.win = (typeof unsafeWindow !== 'undefined') ? unsafeWindow : window;
   ET.$page = ET.win.jQuery || ET.win.$ || ET.$;
@@ -151,14 +151,14 @@
   ET.utils.$ = function (sel) { return document.querySelector(sel); };
   ET.utils.$$ = function (sel) { return document.querySelectorAll(sel); };
 
-  /* ---- 6. Inicializar módulos ---- */
+  /* ---- 6. Inicializar mï¿½dulos ---- */
   var modOrder = ['shared', 'acs', 'acsRep', 'stoolkit', 'sales', 'acuses'];
   var initResults = {};
 
   modOrder.forEach(function (name) {
     var mod = ET.modules[name];
     if (!mod) {
-      console.warn('[ET Main] Módulo no registrado:', name);
+      console.warn('[ET Main] Mï¿½dulo no registrado:', name);
       initResults[name] = { ok: false, error: 'no registrado' };
       return;
     }
@@ -183,21 +183,22 @@
 
   /* ---- 7. Ventana flotante de herramientas ---- */
   (function () {
-    var link = document.createElement('link');
-    link.rel = 'stylesheet';
-    link.href = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css';
-    document.head.appendChild(link);
+    // Position fixed for the floating window
+    var style = document.createElement('style');
+    style.textContent = '.et-floating-window { position: fixed; top: 60px; right: 16px; width: 420px; max-height: 80vh; overflow: auto; z-index: 2147483646; } .btn-fixed { position: fixed; right: 16px; bottom: 16px; z-index: 2147483647; }';
+    document.head.appendChild(style);
 
     var btn = document.createElement('button');
     btn.id = 'et-floating-button';
     btn.type = 'button';
     btn.title = 'Abrir herramientas EASYTRAC';
     btn.innerHTML = '<i class="fa-solid fa-universal-access"></i>';
-    btn.style.cssText = 'position:fixed;right:16px;bottom:16px;z-index:2147483647;width:48px;height:48px;border-radius:50%;border:none;background:#6f6f6f;color:#fff;font-size:20px;cursor:pointer;box-shadow:0 3px 10px rgba(0,0,0,.35);';
+    btn.className = 'btn btn-primary btn-fixed';
 
     var win = document.createElement('div');
     win.id = 'et-floating-window';
-    win.style.cssText = 'position:fixed;top:60px;right:16px;width:420px;max-height:80vh;overflow:auto;z-index:2147483646;display:none;background:#fff;color:#222;border:1px solid #6f6f6f;border-radius:6px;box-shadow:0 4px 18px rgba(0,0,0,.35);font:12px roboto,Arial,sans-serif;resize:both;';
+    win.className = 'et-floating-window panel panel-body';
+    // Position fixed will be set via CSS below
 
     var tabbar = document.createElement('div');
     tabbar.style.cssText = 'display:flex;flex-wrap:wrap;gap:4px;padding:8px;border-bottom:1px solid #ddd;background:#f1f1f1;';
@@ -205,10 +206,10 @@
     pane.style.cssText = 'padding:10px;';
 
     var sections = [
-      { id: 'autocompra', label: 'AUTOCOMPRA', modules: ['acs', 'acsRep'] },
-      { id: 'autoventa', label: 'AUTOVENTA', modules: ['sales'] },
-      { id: 'stoolkit', label: 'TOOLKIT', modules: ['stoolkit'] },
-      { id: 'acuses', label: 'ACUSES DOWNLOADER', modules: ['acuses'] }
+      { id: 'autocompra', label: 'AutoCompra', modules: ['acs', 'acsRep'] },
+      { id: 'autoventa', label: 'AutoVenta', modules: ['sales'] },
+      { id: 'acuses', label: 'Descargar Acuses', modules: ['acuses'] },
+      { id: 'herramientas', label: 'Herramientas Adicionales', modules: ['stoolkit'] }
     ];
 
     function sectionHTML(ids) {
@@ -216,7 +217,7 @@
         var mod = ET.modules[name];
         var res = initResults[name] || {};
         var html = '<div style="margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid #eee">';
-        html += '<b>' + name + '</b> — v' + (mod && mod.version ? mod.version : '?') + ' — ' + (res.ok ? 'ok' : (res.error || 'no registrado')) + '<br>';
+        html += '<b>' + name + '</b> ï¿½ v' + (mod && mod.version ? mod.version : '?') + ' ï¿½ ' + (res.ok ? 'ok' : (res.error || 'no registrado')) + '<br>';
         if (mod && mod.api && Object.keys(mod.api).length) {
           html += '<div style="margin-top:6px;display:flex;flex-wrap:wrap;gap:4px">';
           Object.keys(mod.api).forEach(function (k) {
@@ -295,7 +296,7 @@
     config: ET.config
   };
 
-  /* ---- 8. Notificar que todo está listo ---- */
+  /* ---- 8. Notificar que todo estï¿½ listo ---- */
   ET.emit('easytrac:ready', { version: ET.version, results: initResults });
 
 })();
